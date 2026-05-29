@@ -23,7 +23,7 @@ Four experiments were conducted across March and April 2026 at the University of
 
 ## Repository Structure
 
-Code is organised by experiment. Each folder contains the analysis scripts for that experiment.
+Code is organised by experiment. Each folder contains the analysis scripts for that experiment and is found on the master branch.
 
 ```
 .
