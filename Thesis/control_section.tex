@@ -1,0 +1,121 @@
+% ============================================================
+%  Control Reflectors Scan  —  Testing and Results
+% ============================================================
+
+\subsection{Control Reflectors Scan}
+
+Before acquiring any foliage scans, a free-space baseline measurement was performed on
+11~March~2026 under clear conditions with no vegetation in the radar beam path.
+The purpose of this scan was twofold: to verify that both corner reflectors (CRs)
+produced strong, well-separated returns under unobstructed conditions, and to characterise
+the ambient clutter floor and free-space propagation behaviour of the radar system.
+These reference values are used throughout the subsequent analysis to compute
+vegetation attenuation and to define detection thresholds for the foliage scans.
+
+% ---- LiDAR ----
+\subsubsection*{LiDAR Identification of Corner Reflector Positions}
+
+The LiDAR scan of the control scene confirmed the physical positions of both reflectors.
+Raw point cloud returns near the reflectors were dominated by grass and ground clutter,
+so a height filter was applied to isolate high-intensity returns above the ground plane.
+Figure~\ref{fig:lidar_control_identified} shows the resulting point cloud
+after filtering, with Reflector~1 and Reflector~2 highlighted.
+The centroid of each reflector cluster was computed as its mean Cartesian position:
+
+\begin{itemize}
+  \item Reflector~1: $(8.71,\ {-1.95},\ 0.33)$~m
+  \item Reflector~2: $(9.66,\ 2.77,\ 0.42)$~m
+\end{itemize}
+
+The LiDAR-derived separation between the two reflectors was 4.82~m.
+These positions served as the ground-truth reference for spatial co-registration
+with the radar data.
+
+% ---- Radar ----
+\subsubsection*{Radar Control Scan}
+
+Figure~\ref{fig:control_overview} summarises the full radar control scan analysis
+across three panels.
+
+\paragraph{Amplitude vs.\ range.}
+The upper panel plots every recorded return as a function of range.
+To visualise the overall trend without being dominated by individual outliers,
+returns were grouped into 2~m range bins and the bin mean $\pm 1\sigma$ is
+overlaid as black data points with error bars.
+Both CRs appear as narrow, high-amplitude clusters that stand unambiguously above
+the surrounding clutter: CR1 produces a peak of 66~dB at a range of approximately
+19.8~m (shaded red), and CR2 produces a peak of 34~dB at approximately 22~m
+(shaded green).
+The clutter floor, defined as the mean amplitude of all background returns
+excluding the CR clusters, was $-27.8$~dB and is shown as the dashed orange line.
+CR1 therefore sits 93.8~dB above the clutter floor, and CR2 sits 61.8~dB above it.
+The 32~dB difference between the two peak amplitudes reflects the difference in
+radar cross-section between the large and small reflectors, compounded by their
+slightly different ranges.
+
+A linear fit to all returns yielded a free-space propagation slope of
+$-0.303 \pm 0.308$~dB/m ($R^2 = 0.05$, $p = 0.337$).
+The near-zero $R^2$ and non-significant $p$-value confirm that amplitude does not
+vary systematically with range in the absence of vegetation, as expected for a
+flat clutter background. This validates $-27.8$~dB as a stable, range-independent
+reference for all subsequent foliage scans.
+
+The range separation between the two CRs measured by the radar was 3.98~m,
+compared with 4.82~m derived from LiDAR. The sub-metre discrepancy arises because
+the radar range corresponds to the peak-scattering point on each reflector, whereas
+the LiDAR centroid is computed over the full illuminated reflector surface.
+
+\paragraph{Amplitude distribution.}
+The lower-left panel shows a histogram of all return amplitudes.
+The bulk of returns form a roughly symmetric distribution centred near $-25$~dB,
+consistent with the estimated clutter floor of $-27.8$~dB.  The two CR peaks
+(66~dB for CR1, 34~dB for CR2, marked by dotted vertical lines) are clear outliers
+at the high end of the distribution, separated from the clutter body by a gap of
+more than 60~dB for CR1 and approximately 60~dB for CR2.
+The well-separated CR peaks confirm that a simple amplitude threshold is sufficient
+to detect both reflectors with no false positives in free-space conditions.
+
+\paragraph{XY point cloud.}
+The lower-right panel shows all returns projected onto the horizontal plane and
+coloured by amplitude.  High-amplitude returns (yellow, above roughly $+20$~dB)
+are tightly clustered at the known positions of CR1 and CR2, marked by green stars.
+The remainder of the scene is occupied by low-amplitude clutter (purple, below
+$-20$~dB), confirming that the strong returns are spatially localised to the
+reflector locations and are not artefacts distributed across the scene.
+
+% ---- Figure caption (place near \includegraphics in main file) ----
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[width=\linewidth]{figures/control_scan_overview}
+%   \caption{Control Scan --- Free Space Baseline (11~March~2026, no foliage).
+%     \textit{Top:} Amplitude versus range for all returns.  CR1 (66~dB, red shaded
+%     region) and CR2 (34~dB, green shaded region) are visible as sharp peaks above
+%     the clutter floor of $-27.8$~dB (dashed orange line).  Bin means $\pm 1\sigma$
+%     are shown as black data points.  The linear fit (dashed black line,
+%     $-0.303$~dB/m, $R^2 = 0.05$) confirms a range-independent clutter background.
+%     \textit{Bottom left:} Amplitude distribution of all returns; CR peaks appear as
+%     clear outliers above the clutter body.
+%     \textit{Bottom right:} XY point cloud coloured by amplitude; high-amplitude
+%     returns are spatially concentrated at the CR locations (green stars).}
+%   \label{fig:control_overview}
+% \end{figure}
+
+% ---- Summary ----
+\subsubsection*{Baseline Summary}
+
+The control scan established the following reference values used throughout all
+subsequent analysis:
+
+\begin{itemize}
+  \item \textbf{Clutter floor:} $-27.8$~dB (mean amplitude of background returns
+        in the absence of vegetation)
+  \item \textbf{CR1 peak amplitude:} $66$~dB at 19.8~m range (SNR $= 93.8$~dB)
+  \item \textbf{CR2 peak amplitude:} $34$~dB at 23.8~m range (SNR $= 61.8$~dB)
+  \item \textbf{Free-space propagation slope:} $-0.303$~dB/m (not statistically
+        significant; amplitude is range-independent in free space)
+\end{itemize}
+
+The large SNR margins — 93.8~dB for CR1 and 61.8~dB for CR2 — demonstrate that
+both reflectors are easily detectable in unobstructed conditions.
+Any reduction in these margins in the foliage scans can therefore be attributed
+directly to vegetation attenuation rather than to system noise or sensor limitations.

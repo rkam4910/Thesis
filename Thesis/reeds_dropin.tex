@@ -1,0 +1,403 @@
+% ================================================================
+%  DROP-IN REPLACEMENT — paste over the two existing reeds blocks
+%  1. \subsection{Bushes/Shrubs experiments - Reeds}   (Methodology)
+%  2. \subsection{Reeds/bushes scan}                   (Testing and Results)
+% ================================================================
+
+
+% ----------------------------------------------------------------
+%  METHODOLOGY
+% ----------------------------------------------------------------
+\subsection{Bushes/Shrubs experiments - Reeds}
+
+Two radar scans of the reed bed were acquired to test detection performance
+under different levels of foliage occlusion.
+The first scan was conducted on 11~March~2026, with the corner reflectors
+elevated on stands so that they were only partially occluded by the upper
+reed stems.
+The second scan was conducted on 8~April~2026, with the corner reflectors
+placed directly at ground level behind the reeds, resulting in heavy occlusion
+with the reflectors barely visible to the naked eye.
+The same radar scan parameters were used on both days to allow a direct
+comparison of how occlusion severity affects detection performance.
+
+\subsubsection{Scan Procedure for Reeds}
+
+The scan parameters used on both days are given in Table~\ref{tab:scan_parameters}.
+Both scans were conducted under sunny, slightly windy conditions at approximately
+27$^\circ$C with no cloud cover.
+On both days, two corner reflectors were placed side by side behind the reeds,
+with the radar positioned at the same location for consistency.
+
+In the March scan, the reflectors were elevated on stands above the densest part
+of the reed stems, reducing the effective path length through the vegetation.
+In the April scan, the reflectors were placed on gravel at ground level,
+maximising the path length through the full reed height.
+The trihedral corner reflectors were selected as the detection target because
+they have a high radar cross-section (RCS) and strong geometric reflectivity,
+producing a distinct high-intensity return in both the radar and LiDAR datasets.
+This provides a controlled reference target for assessing concealment effects and
+directly comparing reflector detectability across sensing modalities.
+
+\subsubsection{Behind-Foliage Region Definition}
+
+The detection analysis was spatially constrained to the region between the front
+face of the reeds and the corner reflector.
+This definition was chosen because it includes the vegetation returns as part of
+the clutter, which gives a more realistic false positive rate than using only the
+narrow gap immediately behind the foliage.
+Using the back face of the reeds as the boundary was considered but rejected, as
+the resulting region contained only 8--10 points, making any false positive rate
+statistically meaningless.
+The reed front face was identified at a range of 4.1~m in March and 3.0~m in
+April from the radar.
+All returns in this window were included in the clutter floor and false positive
+calculations.
+
+\subsubsection{Detection Threshold Approaches}
+
+Two complementary threshold approaches were used to analyse detection performance,
+each serving a different analytical purpose.
+
+The first approach used a fixed threshold derived from the control scan clutter
+floor ($-40.1$~dB).
+Applying the same threshold to both foliage scans enables direct comparison
+between March and April on a common reference, and allows vegetation loss to be
+computed relative to free-space conditions.
+
+The second approach estimated the clutter floor independently for each scan from
+the returns within the behind-foliage region.
+This is more representative of how a threshold would be set in a real deployment,
+where no prior free-space reference is available.
+The trade-off is that it makes direct comparison between scans harder, since each
+scan operates against a different baseline.
+
+Both approaches detected the CR successfully in all scans.
+The fixed threshold approach is used for the vegetation loss calculations, and the
+scan-specific approach is used for the ROC curve comparison.
+
+\subsubsection{Vegetation Loss Calculation}
+
+Vegetation loss was estimated by comparing the measured CR peak amplitude in each
+foliage scan against the expected free-space amplitude at the same range, derived
+from the control scan propagation model.
+The vegetation loss is then:
+\[
+  L_{\text{veg}} = A_{\text{free-space}} - A_{\text{measured}}
+\]
+where $A_{\text{free-space}}$ is the predicted amplitude in the absence of
+vegetation and $A_{\text{measured}}$ is the actual peak amplitude observed in the
+foliage scan.
+
+
+% ----------------------------------------------------------------
+%  TESTING AND RESULTS
+% ----------------------------------------------------------------
+\subsection{Reeds/Bushes Scan}
+
+\subsubsection{Radar Scans}
+
+Two scans of the reeds were taken — one on the 11th March 2026 at 11:48 and one
+on the 8th April 2026 at 13:19.
+Two individual corner reflectors were placed behind the reeds on each day, side by
+side.
+On both days, the same radar scan parameters were used for consistency, as shown
+in Table~\ref{tab:scan_parameters}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Parameter} & \textbf{Min} & \textbf{Max} & \textbf{Value} \\
+        \hline
+        spacing    & 0.1    & 10.0  & 0.5    \\
+        min\_pitch & -100.0 & -1.0  & -100.0 \\
+        max\_pitch & -100.0 & -1.0  & -60.0  \\
+        min\_roll  & 0.0    & 360.0 & 0.0    \\
+        max\_roll  & 0.0    & 360.0 & 40.0   \\
+        \hline
+    \end{tabular}
+    \caption{Radar scan parameters}
+    \label{tab:scan_parameters}
+\end{table}
+
+\paragraph{Scan 1: 11/03/2026}
+Sunny conditions, no clouds, 27$^\circ$C, slightly windy.
+On the 11th March, the corner reflectors were placed much higher up and were only
+partially obscured by the reeds.
+On this scan both corner reflectors are seen clearly on the radar scans.
+The setup is shown in Figure~\ref{fig:cr_reeds}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{images/reeds_scan/cr_through_reeds_higher.jpeg}
+        \caption{Enter Caption}
+        \label{fig:cr_higher}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{images/reeds_scan/zoomed_in_reeds_cr.png}
+        \caption{Enter Caption}
+        \label{fig:seethrough}
+    \end{subfigure}
+    \caption{Reeds scan setup --- 11th March 2026}
+    \label{fig:cr_reeds}
+\end{figure}
+
+\paragraph{Scan 2: 8/04/2026}
+Sunny conditions, no clouds, 27$^\circ$C, slightly windy.
+On the 8th of April, the corner reflectors were placed much lower to the ground,
+meaning they were obscured by the reeds and hardly visible to the naked eye.
+As can be seen in Figure~\ref{fig:reeds_april_setup}, only one corner reflector
+is visible to the human eye — the smaller one to the left cannot be seen at all.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/reeds_scan/reeds_camera_image_11th_march.jpeg}
+        \caption{Radar scanning reeds, 8th April}
+        \label{fig:reeds_march}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/reeds_scan/reeds_camera_image_11th_march_cr.jpeg}
+        \caption{Corner reflector placed low to the ground}
+        \label{fig:reeds_march_cr}
+    \end{subfigure}
+    \caption{Reeds scan setup --- 8th April 2026}
+    \label{fig:reeds_april_setup}
+\end{figure}
+
+\subsubsection{Point Cloud Visualisation}
+
+Figure~\ref{fig:reeds_radar_comparison} shows the 3D radar point clouds for the
+March and April scans coloured by amplitude.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/reeds_scan/march_reeds_radar.png}
+        \caption{March reeds scan coloured by amplitude}
+        \label{fig:march_reeds_radar}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/reeds_scan/april_reeds_radar.png}
+        \caption{April reeds scan coloured by amplitude}
+        \label{fig:april_reeds_radar}
+    \end{subfigure}
+    \caption{3D radar point cloud of reeds scans with corner reflector locations marked}
+    \label{fig:reeds_radar_comparison}
+\end{figure}
+
+The dominant factor driving the difference in return amplitude between the two
+scans is the height of the corner reflectors relative to the reed canopy.
+There is approximately a 64~dB difference between corner reflector 2 from March
+to April, even though the reeds themselves have not changed between scans.
+
+A secondary factor is the surface material beneath the corner reflectors.
+In April, the corner reflectors were placed on gravel, which can create multipath
+where the radar signal bounces off the ground and interferes constructively with
+the direct CR return — this effect is much stronger at ground level.
+In March, the corner reflectors were placed on grass, which absorbs more energy
+and produces less multipath.
+
+\subsubsection{Detection Analysis}
+
+\paragraph{Scan-specific thresholds.}
+
+Unlike the fixed control threshold approach, here the clutter floor is estimated
+directly from each scan's own behind-foliage returns, which is more representative
+of a real deployment where no prior free-space reference is available.
+The March clutter floor was $-31.8$~dB and the April clutter floor was $-33.0$~dB.
+At these thresholds, CR1 was detected in both scans while April CR2 remained
+undetectable, falling below its own scan's clutter floor at $-11.0$~dB.
+The results are consistent with the fixed threshold analysis above.
+Figures~\ref{fig:reeds_amplitude_vs_range}--\ref{fig:scanspec_table} show the
+amplitude vs range, threshold sweep, ROC curves, and detection summary for both
+scans with CR1 and CR2 reported separately.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/scanspecific/fig1_scanspec_amplitude_vs_range.png}
+    \caption{Amplitude vs range for the March (left) and April (right) reeds
+    scans using scan-specific clutter floors. CR1 and CR2 are labelled separately.}
+    \label{fig:reeds_amplitude_vs_range}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/scanspecific/fig3_scanspec_threshold_sweep.png}
+    \caption{CR points detected (left) and false positives (right) as a function
+    of threshold for both scans, with CR1 and CR2 shown separately.}
+    \label{fig:scanspec_threshold_sweep}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/scanspecific/fig2_scanspec_roc_curves.png}
+    \caption{ROC curve comparison using scan-specific thresholds. Operating
+    points are marked at each scan's own clutter floor.}
+    \label{fig:scanspec_roc}
+\end{figure}
+
+Table~\ref{fig:scanspec_table} summarises the scan-specific detection metrics
+for CR1 and CR2 across both scans.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/scanspecific/fig4_scanspec_summary_table.png}
+    \caption{Scan-specific detection summary for CR1 and CR2 across the March
+    and April reeds scans.}
+    \label{fig:scanspec_table}
+\end{figure}
+
+\paragraph{Fixed control threshold.}
+
+At the fixed control threshold of $-40.1$~dB, the March scan achieved a true
+positive rate (TPR) of 0.93 and a false positive rate (FPR) of 0.67.
+The April scan achieved a TPR of 0.57 with the same FPR of 0.67.
+The identical FPR across both scans indicates that the behind-foliage clutter
+distribution was similar in both sessions, meaning the vegetation structure did
+not change significantly between March and April.
+The lower TPR for April is consistent with heavier occlusion reducing the number
+of detectable CR returns above the threshold.
+
+Figure~\ref{fig:reeds_snr_comparison} shows the SNR for each individual corner
+reflector across both scans, with April CR2 marked as undetected.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/fig4_reeds_snr_comparison.png}
+    \caption{SNR above clutter floor for each corner reflector in the March and
+    April reeds scans. April CR2 is marked as undetected as it fell below the
+    clutter floor.}
+    \label{fig:reeds_snr_comparison}
+\end{figure}
+
+Figure~\ref{fig:reeds_detection_summary} summarises the detection metrics for
+each corner reflector in both scans.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig5_reeds_detection_summary_table.png}
+    \caption{Detection summary for CR1 and CR2 across the March and April reeds
+    scans. April CR2 is highlighted as undetected.}
+    \label{fig:reeds_detection_summary}
+\end{figure}
+
+\subsubsection{Vegetation Attenuation Estimate}
+
+Vegetation loss was estimated by comparing the measured CR peak amplitude in each
+foliage scan against the expected free-space amplitude at the same range, derived
+from the control scan.
+
+For the March scan, the expected free-space amplitude at 10.92~m was 76.3~dB.
+The measured CR peak was 18.0~dB, giving a vegetation loss of:
+\[
+  L_{\text{March}} = 76.3 - 18.0 = 58.3~\text{dB}
+\]
+
+For the April scan, the expected free-space amplitude at 13.88~m was 72.2~dB.
+The measured CR1 peak was 53.0~dB, giving a vegetation loss of:
+\[
+  L_{\text{April}} = 72.2 - 53.0 = 19.2~\text{dB}
+\]
+
+Figure~\ref{fig:reeds_attenuation_vs_range} shows the peak amplitude of each
+corner reflector plotted against its range.
+Notably, April CR1 is further from the sensor (13.88~m) than the March
+reflectors (10.92~m) yet produces a significantly stronger return, demonstrating
+that target height and alignment relative to the vegetation dominates over range
+as the primary factor in detection performance.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/reeds_scan/reeds_attenuation_vs_range.png}
+    \caption{CR peak amplitude vs range for March and April reeds scans.
+    The dashed line shows the detection threshold ($-29.2$~dB).}
+    \label{fig:reeds_attenuation_vs_range}
+\end{figure}
+
+The April vegetation loss (19.2~dB) is considerably lower than March (58.3~dB),
+despite the April reflectors being more heavily occluded.
+This is counterintuitive and is largely attributed to multipath from the gravel
+surface beneath the April reflectors, as discussed in the point cloud section
+above.
+The April estimate of 19.2~dB should therefore be treated as a lower bound on
+the true path loss through the reeds at ground level.
+
+\subsubsection{Amplitude Distributions}
+
+Figure~\ref{fig:reeds_amplitude_hist} shows the amplitude distributions for both
+scans.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{images/reeds_scan/reeds_amplitude_histograms.png}
+    \caption{Amplitude distributions for the March (left) and April (right) reeds
+    scans. Clutter floor, detection threshold, and CR peak values are marked.}
+    \label{fig:reeds_amplitude_hist}
+\end{figure}
+
+The March distribution is broad and relatively flat, centred around $-25$~dB,
+with the CR peaks at approximately 18~dB appearing as a clear spike at the far
+right — well separated from the vegetation clutter.
+The April distribution is more compact, centred around $-28$~dB.
+April CR2 ($-11.0$~dB) sits within the upper tail of the clutter distribution,
+explaining why it is undetectable above the threshold.
+April CR1 (53.0~dB) is an extreme outlier far beyond the clutter body, consistent
+with the multipath-boosted return discussed above.
+The broader March distribution reflects greater variability in returns from
+partially-occluded vegetation, while the more compact April distribution suggests
+a more uniform clutter background at ground level.
+
+\subsubsection{LiDAR Scans}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{images/reeds_lidar_scan.png}
+    \caption{LiDAR scan of reeds in Cadigal Greens with corner reflector behind}
+    \label{fig:reeds_lidar}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{images/reeds_scan/reeds_lidar_by_height.png}
+        \caption{Enter Caption}
+        \label{fig:height}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \includegraphics[width=\linewidth]{images/reeds_scan/reeds_lidar_by_reflectivity.png}
+        \caption{Enter Caption}
+        \label{fig:reflectivity}
+    \end{subfigure}
+    \caption{Overall Caption}
+    \label{fig:both}
+\end{figure}
+
+Figure~\ref{fig:number_vs_distance_lidar} shows that the LiDAR produces a high
+density of surface returns from the front face of the reed bed, however the point
+count drops sharply beyond this surface, indicating that the laser pulses cannot
+penetrate the vegetation.
+As a result, any corner reflectors placed within or behind the reeds are
+completely obscured and produce no detectable return.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/reeds_scan/number_vs_distance_lidar.png}
+    \caption{LiDAR point return count as a function of distance from the sensor.}
+    \label{fig:number_vs_distance_lidar}
+\end{figure}
+
+This is in direct contrast to the radar, which successfully detected the CR
+through the reeds in all tested configurations.
+The result demonstrates the fundamental advantage of millimetre-wave radar over
+optical LiDAR for concealed-target detection in dense vegetation.

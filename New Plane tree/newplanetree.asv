@@ -1,0 +1,212 @@
+% Clear workspace and close all figures
+clear; close all;
+
+data = readmatrix('pointcloud_20260525-125755_0_fft_cfar.csv');
+
+%Data Structure:   
+% (1) Elevation (Rad)
+% (2) Azimuth (Rad)
+% (3) Return Strength (dB)
+% (4) Range (m)
+% (5) FFT values (semicolon separated)
+% (6) CFAR values (semicolon separated)
+
+% Remove invalid peak values
+data = data(~(data(:,3) == 0 | data(:,3) == 1000), :);
+
+% Filter radar returns below -80 dB
+data = data(data(:,3) >= -80, :);
+
+az = data(:, 2);
+el = (pi/2) + data(:, 1);
+r  = data(:, 4);
+returned_power = data(:, 3);
+
+[x, y, z] = sph2cart(az, el, r);
+
+%% Read raw file to extract FFT (col 5) and CFAR (col 6)
+fid = fopen('pointcloud_20260525-125755_0_fft_cfar.csv', 'r');
+raw_lines = textscan(fid, '%s', 'Delimiter', '\n');
+fclose(fid);
+raw_lines = raw_lines{1};
+
+n_rows = length(raw_lines);
+fft_data     = cell(n_rows, 1);
+cfar_data    = cell(n_rows, 1);
+fft_lengths  = zeros(n_rows, 1);
+cfar_lengths = zeros(n_rows, 1);
+
+for i = 1:n_rows
+    cols = strsplit(raw_lines{i}, ',');
+    if length(cols) >= 5
+        fft_vals = strsplit(cols{5}, ';');
+        fft_vals = str2double(fft_vals);
+        fft_vals = fft_vals(~isnan(fft_vals));
+        fft_data{i} = fft_vals;
+        fft_lengths(i) = length(fft_vals);
+    end
+    if length(cols) >= 6
+        cfar_vals = strsplit(cols{6}, ';');
+        cfar_vals = str2double(cfar_vals);
+        cfar_vals = cfar_vals(~isnan(cfar_vals));
+        cfar_data{i} = cfar_vals;
+        cfar_lengths(i) = length(cfar_vals);
+    end
+end
+
+fprintf('--- FFT ---\n');
+fprintf('Min length: %d\n', min(fft_lengths));
+fprintf('Max length: %d\n', max(fft_lengths));
+fprintf('Most common length: %d\n', mode(fft_lengths));
+fprintf('--- CFAR ---\n');
+fprintf('Min length: %d\n', min(cfar_lengths));
+fprintf('Max length: %d\n', max(cfar_lengths));
+fprintf('Most common length: %d\n', mode(cfar_lengths));
+
+%% Canopy boundaries
+canopy_start = 12.7;
+canopy_end   = 35.2;
+
+%% Figure 1: 3D point cloud coloured by return power
+figure;
+scatter3(x, y, z, 10, returned_power, 'filled');
+colormap jet; colorbar;
+xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
+title('Plane Tree Radar Point Cloud - Return Power');
+axis equal;
+
+%% Figure 2: 3D point cloud coloured by height
+figure;
+scatter3(x, y, z, 10, z, 'filled');
+clim([-3, 20]);
+colormap jet; colorbar;
+xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
+title('Plane Tree Radar Point Cloud - Height');
+axis equal;
+
+%% Figure 3: Attenuation vs Range (bin averaged peak amplitude)
+
+bin_width   = 0.5;
+edges       = 0:bin_width:50;
+bin_centres = edges(1:end-1) + bin_width/2;
+n_bins      = length(bin_centres);
+
+mean_amp = nan(1, n_bins);
+std_amp  = nan(1, n_bins);
+
+r_all              = data(:, 4);
+returned_power_all = data(:, 3);
+
+for i = 1:n_bins
+    in_bin = r_all >= edges(i) & r_all < edges(i+1);
+    if sum(in_bin) >= 5
+        mean_amp(i) = mean(returned_power_all(in_bin));
+        std_amp(i)  = std(returned_power_all(in_bin));
+    end
+end
+
+fit_mask  = bin_centres >= canopy_start & bin_centres <= canopy_end & ~isnan(mean_amp);
+p         = polyfit(bin_centres(fit_mask), mean_amp(fit_mask), 1);
+fit_line  = polyval(p, bin_centres(fit_mask));
+r_squared = 1 - sum((mean_amp(fit_mask) - fit_line).^2) / ...
+                sum((mean_amp(fit_mask) - mean(mean_amp(fit_mask))).^2);
+
+fprintf('\nAttenuation rate: %.3f dB/m, R^2 = %.2f\n', p(1), r_squared);
+
+figure;
+hold on;
+fill([bin_centres(fit_mask), fliplr(bin_centres(fit_mask))], ...
+     [mean_amp(fit_mask) + std_amp(fit_mask), ...
+      fliplr(mean_amp(fit_mask) - std_amp(fit_mask))], ...
+     [0.8 0.8 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.5);
+plot(bin_centres, mean_amp, 'b.-', 'LineWidth', 1.2, 'MarkerSize', 10);
+plot(bin_centres(fit_mask), fit_line, 'r--', 'LineWidth', 1.5);
+xline(canopy_start, 'k--', 'Canopy front', 'LabelVerticalAlignment', 'bottom');
+xline(canopy_end,   'k--', 'Canopy back',  'LabelVerticalAlignment', 'bottom');
+hold off;
+grid on;
+xlabel('Range (m)');
+ylabel('Mean Amplitude (dB)');
+title('Attenuation vs Range through Plane Tree Canopy');
+legend('±1\sigma', 'Mean amplitude', ...
+       sprintf('Linear fit: %.3f dB/m, R^2=%.2f', p(1), r_squared), ...
+       'Location', 'northeast');
+xlim([5, 50]);
+
+%% Figure 4: CFAR threshold vs FFT amplitude vs range
+
+bin_range  = 0.125;
+n_bins_fft = mode(fft_lengths);
+range_axis = (0:n_bins_fft-1) * bin_range + (2 * bin_range);
+
+% Build FFT matrix and normalise to dB relative to max
+valid_fft   = fft_lengths == n_bins_fft;
+fft_matrix  = cell2mat(fft_data(valid_fft));
+fft_linear  = abs(fft_matrix);
+fft_norm    = fft_linear ./ max(fft_linear(:));
+fft_db      = 20*log10(fft_norm);
+
+% Build CFAR matrix - already in dB
+cfar_mode_len = mode(cfar_lengths(cfar_lengths > 0));
+valid_cfar    = cfar_lengths == cfar_mode_len;
+cfar_matrix   = cell2mat(cfar_data(valid_cfar));
+if cfar_mode_len < n_bins_fft
+    cfar_matrix = [cfar_matrix, ...
+                   nan(size(cfar_matrix,1), n_bins_fft - cfar_mode_len)];
+end
+
+% Shift FFT dB scale to align with CFAR dB scale
+mean_cfar_db = mean(cfar_matrix, 1, 'omitnan');
+std_cfar_db  = std(cfar_matrix,  0, 1, 'omitnan');
+
+mean_fft_db  = mean(fft_db, 1, 'omitnan');
+std_fft_db   = std(fft_db,  0, 1, 'omitnan');
+
+cfar_max     = max(mean_cfar_db, [], 'omitnan');
+fft_max      = max(mean_fft_db,  [], 'omitnan');
+shift        = cfar_max - fft_max;
+mean_fft_db  = mean_fft_db + shift;
+std_fft_db   = std_fft_db  + shift;
+
+% Detections where FFT exceeds CFAR
+detection_mask   = mean_fft_db > mean_cfar_db;
+detection_ranges = range_axis(detection_mask);
+detection_amps   = mean_fft_db(detection_mask);
+
+fprintf('\nNumber of range bins with detections: %d / %d\n', ...
+        sum(detection_mask), n_bins_fft);
+
+figure;
+hold on;
+fill([range_axis, fliplr(range_axis)], ...
+     [mean_fft_db + std_fft_db, fliplr(mean_fft_db - std_fft_db)], ...
+     [0.8 0.8 1.0], 'EdgeColor', 'none', 'FaceAlpha', 0.4);
+fill([range_axis, fliplr(range_axis)], ...
+     [mean_cfar_db + std_cfar_db, fliplr(mean_cfar_db - std_cfar_db)], ...
+     [1.0 0.8 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.4);
+plot(range_axis, mean_fft_db,  'b-', 'LineWidth', 1.2, ...
+     'DisplayName', 'Mean FFT amplitude (normalised)');
+plot(range_axis, mean_cfar_db, 'r-', 'LineWidth', 1.2, ...
+     'DisplayName', 'Mean CFAR threshold');
+scatter(detection_ranges, detection_amps, 20, 'g', 'filled', ...
+        'DisplayName', 'Detection (FFT > CFAR)');
+xline(canopy_start, 'k--', 'Canopy front', ...
+      'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
+xline(canopy_end,   'k--', 'Canopy back', ...
+      'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
+hold off;
+grid on;
+xlabel('Range (m)');
+ylabel('Amplitude (dB)');
+title('FFT Amplitude and CFAR Threshold vs Range');
+legend('FFT ±1\sigma', 'CFAR ±1\sigma', ...
+       'Mean FFT amplitude (normalised)', ...
+       'Mean CFAR threshold', ...
+       'Detection (FFT > CFAR)', ...
+       'Location', 'northeast');
+xlim([5, 60]);
+
+for i = 1:5
+    fprintf('Row %d CFAR values: ', i);
+    disp(cfar_data{i}');
+end

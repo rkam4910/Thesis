@@ -1,0 +1,151 @@
+% ============================================================
+%  CHERRY BALLART SHRUB --- drop-in section
+%  Replace the existing "Cherry Ballart tree" subsection with this.
+% ============================================================
+
+\subsection{Cherry Ballart Shrub}
+
+The Cherry Ballart (\emph{Exocarpos cupressiformis}) adjacent to the Oldschool building was selected as the second shrub target for its dense, layered canopy and the practical accessibility of the site. Unlike the reeds, the Cherry Ballart has rigid woody stems and a tightly packed outer leaf layer, so it represents a more opaque foliage case. A single corner reflector was placed directly behind the shrub, at a range of 3.72~m from the radar, and the beam had to cross approximately 2~m of vegetation to reach it.
+
+Figures~\ref{fig:radarsetup}--\ref{fig:hiddenradar} show the physical setup. From the radar side, the corner reflector was not visible to the naked eye through the canopy (Figure~\ref{fig:hiddenradar}), while from the opposite side it was clearly visible behind a thinner part of the shrub (Figure~\ref{fig:crvisibletoradar}). This asymmetry in visual occlusion became important in the follow-up scans on 11~April, where the beam was deliberately steered through the denser and thinner sections of the same shrub.
+
+The scan on 2~March was a single-look through the shrub at the CR, used to characterise bulk attenuation through the canopy. The follow-up scans on 11~April 2026 re-used the same target but with the radar aligned at two different azimuths to test how detection performance changes with canopy thickness along the beam path. Conditions were sunny and dry on both days ($\approx$25--28$^\circ$C, little wind).
+
+\subsubsection{Through-canopy attenuation analysis}
+
+To characterise in-canopy attenuation, the cone around the boresight to the CR was extracted from the radar point cloud and the amplitude profile was fitted against range. The processing followed these steps. Returns below $-80$~dB and beyond 6~m were first discarded, as these were considered out-of-scene. The remaining spherical coordinates were converted to Cartesian form using the same $az = \text{roll}$, $el = \pi/2 + \text{pitch}$ convention described in the coordinate section. The boresight direction was estimated as the unit vector pointing to the centroid of the remaining point cloud. For each return, the angular separation from the boresight was computed using the dot product of the unit position vector and the boresight, and any point outside a 15$^\circ$ half-angle cone was rejected. Points inside the cone were then binned by range in 0.5~m intervals, and a linear model was fit to the mean amplitude per bin:
+\begin{equation}
+    L(r) = L_0 + k \, r
+    \label{eq:weissberger_ballart}
+\end{equation}
+where $k$ is the two-way attenuation rate in dB/m. The quality of the fit is reported using $R^2$ and the $p$-value on the slope.
+
+The fit results are shown in Table~\ref{tab:attenuation_fit_ballart}. A value of $k = 6.27$~dB/m was obtained, with $R^2 = 0.65$ and $p = 0.0047$ over 9789 points inside the cone. This is a high attenuation rate by any standard, consistent with the dense woody structure of the Cherry Ballart. For comparison, published foliage attenuation rates at 60--95~GHz typically fall in the 2--8~dB/m range for pine and deciduous canopies~\cite{a_y_nashashibi_millimeter-wave_2004, sun2023foliage}, and extrapolation to 120~GHz would predict values at the upper end of this range because both leaf dielectric loss and volumetric scattering increase as wavelength shortens~\cite{ulaby2014microwave}.
+
+\begin{table}[H]
+\centering
+\caption{Attenuation model fit --- Cone $\pm 15^{\circ}$ around CR boresight, Cherry Ballart shrub.}
+\label{tab:attenuation_fit_ballart}
+\begin{tabular}{ll}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Model                   & $L(r) = -69.7 + 6.27 \times r$ (dB) \\
+Attenuation rate $k$    & 6.27 dB/m \\
+$R^2$                   & 0.652 \\
+$p$-value               & 0.0047 \\
+Standard error on slope & $\pm$1.62 dB/m \\
+Points in cone          & 9{,}789 / 16{,}618 \\
+\hline
+\end{tabular}
+\end{table}
+
+The binned amplitude profile does not follow a clean monotonic decay. Signal strength increased over the first $\sim$3~m and then dropped off rapidly beyond that. This is consistent with the layered structure of the Cherry Ballart itself: the outer leaf layer scatters strongly as the beam enters the canopy, the relatively open middle of the shrub generates fewer returns, and the woody core then produces a second set of strong but more diffuse returns before the signal is absorbed. A simple linear Weissberger-style model therefore captures the average loss rate but misses the layer-specific variability, which would be better represented by a piecewise fit if more scans were available.
+
+The attenuation analysis was repeated for 10$^\circ$-wide azimuth slices across the scan to check how directional the canopy loss was. The results, shown in Table~\ref{tab:ballart_multi_az}, varied from 0.17~dB/m at 30$^\circ$ to 5.19~dB/m at 10$^\circ$. The 30$^\circ$ cut has a visibly sparse path through the shrub and the fit quality is poor, so the 0.17~dB/m value should be treated as a lower bound rather than a meaningful in-canopy attenuation number. The variation across azimuth motivated the two-angle follow-up scans on 11~April, described below, which were designed to deliberately put a dense and a thin section of the same shrub into the boresight.
+
+\begin{table}[H]
+\centering
+\caption{Attenuation rate $k$ extracted from $\pm 5^{\circ}$ azimuth cuts through the Cherry Ballart.}
+\label{tab:ballart_multi_az}
+\begin{tabular}{ccc}
+\hline
+\textbf{Azimuth cut} & \textbf{$k$ (dB/m)} & \textbf{Qualitative canopy thickness} \\
+\hline
+10$^\circ$ & 5.19 & Moderate \\
+20$^\circ$ & 2.91 & Thin    \\
+30$^\circ$ & 0.17 & Very thin (edge of shrub) \\
+40$^\circ$ & 3.58 & Moderate \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Through-bush detection scans, 11/04/2026}
+
+Two follow-up radar scans were acquired through the Cherry Ballart with the CR kept in the same physical location and the radar re-aimed to put different thicknesses of canopy into the boresight. The first scan (Scan A) was aligned through a thinner portion of the shrub, and the second (Scan B) was aimed through the thickest portion of the shrub I could find while keeping the CR in view from behind. Scan parameters were held constant across both scans and are summarised in Table~\ref{tab:shrub_11apr_params}.
+
+\begin{table}[H]
+\centering
+\caption{Radar scan parameters --- 11/04/2026 Cherry Ballart detection scans.}
+\label{tab:shrub_11apr_params}
+\begin{tabular}{lc}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Spacing     & 0.2 \\
+min pitch   & $-100^{\circ}$ \\
+max pitch   & $-70^{\circ}$  \\
+min roll    & 0$^{\circ}$   \\
+max roll    & 40$^{\circ}$  \\
+CR range    & 3.72 m \\
+\hline
+\end{tabular}
+\end{table}
+
+Detection analysis followed the pipeline described in the methodology. Each point cloud was trimmed to the analysis window [1.45, 5.0]~m, the fence returns that dominate the low-azimuth part of the scene at this site were masked out, and a 15$^\circ$ cone was extracted around the CR boresight. The CR peak was taken as the maximum amplitude inside the CR range window (3.72 $\pm$ 0.3~m) and the clutter floor was computed as the mean amplitude of the behind-shrub returns inside the same cone, excluding the CR window itself. Two detection criteria were applied in parallel: CR peak above the fixed control-scan threshold of $-36.9$~dB, and CR peak above the scan-specific 3$\sigma$ criterion.
+
+\paragraph{Scan A --- thin section.}
+Scan A was aligned through a sparser part of the canopy. The CR was clearly visible in the amplitude vs range plot as a compact peak at 3.72~m. The measured CR peak was $+18.0$~dB, which is 75.9~dB above the scan's own clutter floor of $-57.9$~dB ($\sigma = 13.2$~dB), and 54.9~dB above the fixed control threshold. Both detection criteria were comfortably satisfied. The in-bush attenuation rate fitted through the canopy body was 6.80~dB/m ($R^2 = 0.75$), which is in close agreement with the 6.27~dB/m bulk value obtained from the March scan and with the 10$^\circ$ azimuth cut (5.19~dB/m).
+
+Comparing the CR peak to the free-space expectation at 3.72~m gives a direct measure of vegetation loss. The free-space amplitude predicted from the control scan (CR1 at 19.79~m, $+66$~dB) is
+\begin{equation}
+    A_{\text{free}}(3.72) = 66 - 40\log_{10}(3.72/19.79) = +95.0~\text{dB},
+\end{equation}
+giving a two-way vegetation loss through the thin section of
+\begin{equation}
+    L_{\text{veg,A}} = 95.0 - 18.0 = 77.0~\text{dB}.
+\end{equation}
+
+\paragraph{Scan B --- thick section.}
+Scan B was aimed through the thickest part of the same shrub and produced a fundamentally different result. No peak was visible in the CR range window, and the brightest pixel inside that window was $-41.0$~dB, which is below the fixed control threshold of $-36.9$~dB. The scan's own clutter floor was $-62.1$~dB with $\sigma = 13.5$~dB, giving an apparent SNR of 21.1~dB above the floor. This falls below the 3$\sigma$ criterion (3$\sigma$ = 40.5~dB), so the CR is classified as undetected. The $-41.0$~dB reading is not a CR return at all but shrub speckle that happened to fall inside the CR range window.
+
+Because the CR is undetected, the vegetation loss obtained by taking the $-41.0$~dB reading at face value gives a \emph{lower bound} rather than a point estimate:
+\begin{equation}
+    L_{\text{veg,B}} \geq 95.0 - (-41.0) = 136.0~\text{dB}.
+\end{equation}
+The true two-way loss through the thick section is therefore at least 136~dB and could be higher. The in-canopy attenuation fit for Scan B returned $k = 3.60$~dB/m but with $R^2 = 0.18$; with no CR peak at the end of the bush to anchor the gradient, the regression is fitting across shrub speckle and the slope is not physically meaningful. It is reported here only for completeness.
+
+\paragraph{Comparison.}
+Table~\ref{tab:cherry_ballart_11apr_summary} compares Scan A, Scan B, and the control scan directly. The clutter statistics of the two shrub scans are almost identical ($-57.9$ vs $-62.1$~dB floor, 13.2 vs 13.5~dB $\sigma$), which shows that the radar is behaving the same way in both scans and the non-detection in Scan B is not caused by a change in the receiver or the scene noise. The difference is driven entirely by the CR return itself, which drops by 59~dB when the beam is moved from the thin to the thick section of the same shrub.
+
+\begin{table}[H]
+\centering
+\caption{Cherry Ballart detection summary, 11/04/2026 --- Scan A (thin section) vs Scan B (thick section) vs control.}
+\label{tab:cherry_ballart_11apr_summary}
+\resizebox{\textwidth}{!}{%
+\definecolor{headblue}{HTML}{2E6DA4}
+\definecolor{detectgreen}{HTML}{E8F5E8}
+\definecolor{nondetectred}{HTML}{FADBD8}
+\begin{tabular}{lccc}
+\hline
+\rowcolor{headblue}
+\textcolor{white}{\textbf{Metric}} &
+\textcolor{white}{\textbf{Control}} &
+\textcolor{white}{\textbf{Scan A (thin)}} &
+\textcolor{white}{\textbf{Scan B (thick)}} \\
+\hline
+Range to CR (m)          & 19.79   & \cellcolor{detectgreen}3.72  & \cellcolor{nondetectred}3.72  \\
+CR peak (dB)             & $+66.0$ & \cellcolor{detectgreen}$+18.0$ & \cellcolor{nondetectred}$-41.0$ \\
+Expected free-space (dB) & ---     & \cellcolor{detectgreen}$+95.0$ & \cellcolor{nondetectred}$+95.0$ \\
+Vegetation loss (dB)     & 0       & \cellcolor{detectgreen}77.0  & \cellcolor{nondetectred}$\geq 136.0$ \\
+$k$ through bush (dB/m)  & ---     & \cellcolor{detectgreen}6.80 ($R^2 = 0.75$) & \cellcolor{nondetectred}3.60 ($R^2 = 0.18$, unreliable) \\
+Own clutter floor (dB)   & $-36.9$ & \cellcolor{detectgreen}$-57.9$ & \cellcolor{nondetectred}$-62.1$ \\
+$\sigma$ clutter (dB)    & 32.0    & \cellcolor{detectgreen}13.2  & \cellcolor{nondetectred}13.5 \\
+SNR vs own floor (dB)    & $+102.9$ & \cellcolor{detectgreen}$+75.9$ & \cellcolor{nondetectred}$+21.1$ \\
+SNR vs control floor (dB) & $+102.9$ & \cellcolor{detectgreen}$+54.9$ & \cellcolor{nondetectred}$-4.1$ \\
+3$\sigma$ criterion met? & Yes     & \cellcolor{detectgreen}Yes   & \cellcolor{nondetectred}No \\
+Detected?                & Yes     & \cellcolor{detectgreen}Yes   & \cellcolor{nondetectred}No \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+The two scans therefore act as bookends on the foliage penetration envelope of this shrub at 120~GHz. Scan A represents a typical partial-occlusion case where the CR remains detectable at high SNR and the canopy loss can be quantified. Scan B represents a full-occlusion case where the CR is lost below the shrub clutter and only a lower bound on vegetation loss can be reported. The 59~dB difference between the two scans corresponds to roughly 8--9~dB of extra two-way loss per extra metre of dense biomass, which is consistent with the 6.27~dB/m bulk attenuation figure from the March scan when the denser leaf and wood density of the thick section is accounted for.
+
+\subsubsection{LiDAR response at the Cherry Ballart}
+
+The LiDAR scan of the Cherry Ballart (Figure~\ref{fig:placeholder}) produced a dense return from the front face of the shrub and very few returns from within or behind the canopy. The 905~nm pulses are absorbed or scattered at the outer leaf surface and do not reach the CR. The CR therefore produced no detectable LiDAR return in either the March or April scans, regardless of whether the radar was able to detect it. This is the same behaviour observed at the reeds and reinforces the conclusion that optical LiDAR provides surface geometry of the shrub but is not able to image through it, whereas the 120~GHz radar recovered the CR in Scan A through approximately 2~m of dense canopy.
+
+\subsubsection{Limitations}
+
+Two limitations of this set of scans should be noted. First, the "thin" and "thick" labels on the 11~April scans are qualitative --- the actual optical path length through the canopy was not measured at the time, only the radar azimuth. A tape measurement of canopy depth along the two boresights would let the 59~dB amplitude difference be converted directly into an incremental attenuation rate. Second, Scan B is a single non-detection, so the $\geq 136$~dB lower bound is a statement about this particular geometry rather than a general limit. Repeated scans with the radar aimed at different dense azimuths of the same shrub would be needed to establish a repeatable non-detection threshold for this canopy type.

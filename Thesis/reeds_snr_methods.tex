@@ -1,0 +1,227 @@
+% ============================================================
+%  SNR Analysis --- Methodology and Results drop-in
+%  Raquel Kampel, AMME4112, 120 GHz FMCW radar thesis
+%
+%  Where to paste:
+%    Block A -> Methodology / Detection metrics subsection
+%    Block B -> Testing and Results / Reeds (SNR paragraph)
+%    Block C -> Table (anywhere in the reeds results section)
+% ============================================================
+
+
+% ============================================================
+%  BLOCK A --- METHODOLOGY / DETECTION METRICS
+%  Paste this under the existing "Detection metrics:" heading
+% ============================================================
+
+\subsubsection*{Signal-to-Noise Ratio Definition}
+
+The signal-to-noise ratio (SNR) is the primary figure of merit used in this
+thesis to quantify how far a corner reflector return stands above the
+surrounding clutter.
+Because the radar records amplitudes directly in decibels relative to the
+receiver noise floor, SNR is expressed as a difference rather than a ratio:
+\begin{equation}
+    \mathrm{SNR}_{\mathrm{dB}} \;=\; A_{\mathrm{peak}} \;-\; \mu_{\mathrm{clutter}}
+    \label{eq:snr_definition}
+\end{equation}
+where $A_{\mathrm{peak}}$ is the maximum amplitude recorded within the range
+window occupied by the corner reflector, and $\mu_{\mathrm{clutter}}$ is the
+mean amplitude of the clutter returns in the same scan.
+The clutter window used for $\mu_{\mathrm{clutter}}$ excludes the corner
+reflector range cells to avoid biasing the estimate with the target return.
+
+Two variants of SNR are reported throughout this work, each serving a
+different analytical purpose.
+
+\paragraph{Scan-specific SNR.}
+Here the clutter floor is estimated from the returns in the same scan as the
+target, specifically from the behind-foliage region defined between the front
+face of the vegetation and the reflector range.
+This variant reflects the SNR that would be available to a real-time detector
+operating without any prior free-space reference:
+\begin{equation}
+    \mathrm{SNR}^{\mathrm{own}}_{\mathrm{dB}}
+    \;=\; A_{\mathrm{peak}} \;-\; \mu_{\mathrm{clutter,\ own}}
+    \label{eq:snr_own}
+\end{equation}
+
+\paragraph{Control-referenced SNR.}
+Here the clutter floor is taken from the free-space control scan
+($\mu_{\mathrm{clutter,\ ctrl}} = -40.1$~dB in this work).
+This variant uses a fixed, scan-independent reference and therefore allows
+direct comparison of target detectability between the foliage scans and the
+free-space baseline:
+\begin{equation}
+    \mathrm{SNR}^{\mathrm{ctrl}}_{\mathrm{dB}}
+    \;=\; A_{\mathrm{peak}} \;-\; \mu_{\mathrm{clutter,\ ctrl}}
+    \label{eq:snr_ctrl}
+\end{equation}
+Any reduction in $\mathrm{SNR}^{\mathrm{ctrl}}$ between the control scan and a
+foliage scan --- after accounting for the $40\log_{10}(r_2/r_1)$ free-space
+range correction --- can be attributed to two-way attenuation through the
+vegetation.
+
+\subsubsection*{Detectability Criterion}
+
+A target is classified as detected when its peak amplitude exceeds the
+clutter floor by a margin large enough to reject random clutter fluctuations.
+Adopting the common $3\sigma$ criterion,
+\begin{equation}
+    A_{\mathrm{peak}} \;>\; \mu_{\mathrm{clutter}} \;+\; 3\,\sigma_{\mathrm{clutter}},
+    \label{eq:detect_criterion}
+\end{equation}
+which corresponds to a false-alarm probability of $\approx 0.0013$ for
+Gaussian-distributed clutter.
+Equivalently, a target is considered detected when
+$\mathrm{SNR}_{\mathrm{dB}} > 3\sigma_{\mathrm{clutter}}$.
+The clutter standard deviation $\sigma_{\mathrm{clutter}}$ is computed from
+the same window used for $\mu_{\mathrm{clutter}}$.
+Reporting both the SNR and $\sigma_{\mathrm{clutter}}$ allows the reader to
+recover the detectability margin directly from the tables without re-deriving
+the threshold.
+
+\subsubsection*{Two-way Vegetation Attenuation from SNR}
+
+Once a corner reflector is detected in a foliage scan, the excess path loss
+attributable to vegetation is obtained by subtracting the measured
+control-referenced SNR from the SNR predicted under free-space propagation at
+the same range:
+\begin{equation}
+    L_{\mathrm{veg}}
+    \;=\; \mathrm{SNR}^{\mathrm{ctrl}}_{\mathrm{free}}(r)
+          \;-\; \mathrm{SNR}^{\mathrm{ctrl}}_{\mathrm{meas}}(r),
+    \label{eq:veg_loss}
+\end{equation}
+where $\mathrm{SNR}^{\mathrm{ctrl}}_{\mathrm{free}}(r)$ is the free-space SNR
+projected to the target range using the control-scan peak amplitude and the
+$40\log_{10}(r/r_{\mathrm{ctrl}})$ range correction.
+This reduces to the expression used later in the results section
+(Equation~\ref{eq:veg_loss_results}) and makes explicit that vegetation loss
+is a difference of two SNR values rather than of two raw amplitudes.
+
+
+% ============================================================
+%  BLOCK B --- RESULTS / REEDS (SNR PARAGRAPH)
+%  Paste this inside the Reeds/Bushes Scan section, after the
+%  detection threshold discussion and before the vegetation
+%  attenuation paragraph.
+% ============================================================
+
+\subsubsection{Signal-to-Noise Ratio Analysis}
+
+The SNR for each corner reflector was computed using both the scan-specific
+and control-referenced definitions given in
+Equations~\ref{eq:snr_own} and \ref{eq:snr_ctrl}.
+Results are summarised in Table~\ref{tab:reeds_snr}.
+
+In the control scan, CR1 produced an SNR of 93.8~dB at a range of 19.79~m,
+confirming that the reflector is well above the system noise floor in
+free-space conditions and establishing an upper bound on SNR performance for
+this radar and target combination.
+
+For the March reeds scan, CR1 achieved a scan-specific SNR of 49.8~dB
+($A_{\mathrm{peak}} = 18.0$~dB, $\mu_{\mathrm{clutter,\ own}} = -31.8$~dB,
+$\sigma_{\mathrm{clutter}} = 22.0$~dB).
+This is 44.0~dB below the control-scan SNR at the same range, which is
+consistent with two-way attenuation through the partially-occluding reed
+canopy.
+Strictly applied, the $3\sigma$ detectability criterion requires
+$\mathrm{SNR}^{\mathrm{own}} > 3\sigma_{\mathrm{clutter}} = 66.0$~dB, which
+March CR1 does \emph{not} meet (49.8~dB).
+The criterion is known to be conservative when the clutter distribution is
+long-tailed rather than Gaussian, as is the case here (see the note on
+clutter variance below).
+In practice the return is unambiguously detectable: 118 CR points exceed the
+fixed control threshold, and the CR cluster appears as a clear spike well
+separated from the bulk of the clutter distribution in the amplitude
+histogram (Figure~\ref{fig:reeds_amplitude_hist}).
+
+For the April reeds scan, CR1 achieved a scan-specific SNR of 86.0~dB
+($A_{\mathrm{peak}} = 53.0$~dB, $\mu_{\mathrm{clutter,\ own}} = -33.0$~dB)
+despite being more heavily occluded at ground level.
+This is attributed primarily to constructive multipath from the gravel
+surface beneath the reflector (discussed in the point-cloud section) rather
+than to reduced vegetation loss, and the April SNR should therefore be
+treated as an \emph{upper} bound rather than a measure of true foliage
+penetration.
+April CR2 recorded a peak of only $-11.0$~dB, giving a scan-specific SNR of
+22.0~dB --- above the clutter mean but \emph{below} the $3\sigma$
+detectability threshold for this scan, and consistent with the reflector
+being fully obscured by the dense reed stems at ground level.
+
+\paragraph{Note on clutter variance.}
+The standard deviation of the behind-foliage clutter in the reeds scans
+(22.0~dB for March) is unusually large because the clutter window contains
+both strong reed-surface returns and weaker inter-stem returns.
+Under these conditions the $3\sigma$ criterion of
+Equation~\ref{eq:detect_criterion} is conservative; the separation of the CR1
+peak from the bulk of the clutter distribution (visible in the amplitude
+histogram) provides additional evidence that the detection is robust.
+A CFAR-style local threshold would mitigate the effect of this long-tailed
+clutter, but the sample density per range bin
+($\sim$12--30 points)
+is below the 16--32 point minimum typically required for stable CFAR
+estimation, which is why a global fixed threshold was retained here.
+
+
+% ============================================================
+%  BLOCK C --- RESULTS / REEDS (SUMMARY TABLE)
+%  Paste near the SNR paragraph above.
+% ============================================================
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{lccccc}
+        \hline
+        \textbf{Scan} & $r$ (m) & $A_{\mathrm{peak}}$ (dB) &
+        $\mu_{\mathrm{clutter}}$ (dB) & $\sigma_{\mathrm{clutter}}$ (dB) &
+        $\mathrm{SNR}^{\mathrm{own}}$ (dB) \\
+        \hline
+        Control CR1       & 19.79 & 66.0  & $-27.8$ & ---   & 93.8  \\
+        Control CR2       & 22.00 & 34.0  & $-27.8$ & ---   & 61.8  \\
+        March CR1         & 10.92 & 18.0  & $-31.8$ & 22.0  & 49.8  \\
+        March CR2         & 10.92 & 18.0  & $-31.8$ & 22.0  & 49.8  \\
+        April CR1         & 13.88 & 53.0  & $-33.0$ & ---   & 86.0  \\
+        April CR2         & 14.01 & $-11.0$ & $-33.0$ & --- & 22.0 (undet.) \\
+        \hline
+    \end{tabular}
+    \caption{SNR summary for the control and reeds scans.
+    $\mathrm{SNR}^{\mathrm{own}}$ is the peak amplitude minus the scan's own
+    behind-foliage clutter mean.
+    Control values use the full free-space clutter window.
+    April CR2 falls below the $3\sigma$ detectability criterion and is
+    classified as undetected.}
+    \label{tab:reeds_snr}
+\end{table}
+
+
+% ============================================================
+%  NOTES FOR RAQUEL (remove before submission)
+% ============================================================
+%
+%  1. Clutter floor number -- the thesis currently has three:
+%       -27.8 dB   (control prose, Block A uses this via Eq. ref)
+%       -36.9 dB   (table "Own clutter floor")
+%       -40.1 dB   (fixed detection threshold)
+%     Eq. \ref{eq:snr_ctrl} above uses -40.1 dB because that's what the
+%     fixed-threshold analysis uses. The -27.8 dB number in Block B's
+%     control paragraph is the control-scan clutter mean. If these are
+%     actually meant to be the same quantity, reconcile before submission.
+%
+%  2. March CR1 / CR2 -- the code sets MARCH_CR1_RANGE = MARCH_CR2_RANGE
+%     = 10.92 m because the two reflectors fall into the same range bin
+%     in March. Table rows for March CR1 and CR2 are therefore identical
+%     by construction; consider collapsing to a single row labelled
+%     "March CR1+CR2 (co-located)".
+%
+%  3. Clutter sigma -- the April values are not printed by the current
+%     analysis script output that I can see. If you have them, fill in
+%     the "---" entries in Table ref{tab:reeds_snr}. If not, state in
+%     the table caption that sigma was only computed for March.
+%
+%  4. TPR/FPR numbers -- the prose currently says 0.93 / 0.57 at FPR 0.67,
+%     the table elsewhere says 0.88 / 0.65. The SNR writeup above does
+%     not depend on those numbers, so it is safe to paste in as-is, but
+%     the TPR/FPR mismatch still needs to be reconciled (see thesis_todo).
